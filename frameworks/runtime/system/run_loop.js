@@ -306,3 +306,26 @@ SC.run = function(callback, target, forceNested) {
     if(forceNested || !alreadyRunning) SC.RunLoop.end();
   }
 };
+
+/**
+  Wraps the target method in a run loop to ensure that it is protected
+  from having exceptions being thrown and not being caught.
+
+  It will pass in all arguments to the function when the function is
+  called, and return ther result. This should be used to wrap all foreign
+  method calls outside of SproutCore.
+
+  @param {Object} target The target object to alter.
+  @param {String} action The action to be wrapped on the target.
+  @param {Boolean} forceNested Forces a new run loop even if it's already running.
+ */
+SC.protect = function (target, action, forceNested) {
+  var original = target[action];
+  target[action] = function () {
+    var args = arguments, result;
+    SC.run(function () {
+      result = original.apply(this, args);
+    }, this, forceNested);
+    return result;
+  };
+};
