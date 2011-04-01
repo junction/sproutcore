@@ -318,14 +318,17 @@ SC.run = function(callback, target, forceNested) {
   @param {Object} target The target object to alter.
   @param {String} action The action to be wrapped on the target.
   @param {Boolean} forceNested Forces a new run loop even if it's already running.
+  @param {Boolean} silent Makes the function look like it was never run.
  */
-SC.protect = function (target, action, forceNested) {
+SC.protect = function (target, action, forceNested, silent) {
   var original = target[action];
   target[action] = function () {
-    var args = arguments, result;
+    var args = arguments, result,
+        last = SC.RunLoop.lastRunLoopEnd;
     SC.run(function () {
       result = original.apply(this, args);
     }, this, forceNested);
+    if (silent) SC.RunLoop.lastRunLoopEnd = last;
     return result;
   };
 };
