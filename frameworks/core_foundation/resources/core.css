@@ -10,7 +10,8 @@
  * Color should be changed with CSS for that view
  * Only set on div, since occasionally we rely on native styling for other tags */
 div.sc-view {
-  border: 0 solid transparent;
+  border-width: 0;
+  border-style: solid;
 }
 
 .ellipsis {
