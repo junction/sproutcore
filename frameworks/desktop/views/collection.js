@@ -89,6 +89,15 @@ SC.CollectionView = SC.View.extend(SC.CollectionViewDelegate, SC.CollectionConte
     @default NO
   */
   useFastPath: NO,
+
+  /**
+    If YES, selection will wrap around from the first to the
+    last item and from the last to the first.
+
+    @type Boolean
+    @default NO
+   */
+  allowsCircularSelection: NO,
   
   /**
     An array of content objects
@@ -1705,7 +1714,8 @@ SC.CollectionView = SC.View.extend(SC.CollectionViewDelegate, SC.CollectionConte
     
     var selTop    = sel ? sel.get('min') : -1,
         selBottom     = sel ? sel.get('max')-1 : -1,
-        anchor        = this._selectionAnchor;
+        anchor        = this._selectionAnchor,
+        lim        = this.get('length');
     if (SC.none(anchor)) anchor = selTop;
 
     // if extending, then we need to do some fun stuff to build the array
@@ -1728,7 +1738,9 @@ SC.CollectionView = SC.View.extend(SC.CollectionViewDelegate, SC.CollectionConte
     // if not extending, just select the item previous to the selTop
     } else {
       selTop = this._findPreviousSelectableItemFromIndex(selTop - numberOfItems);
-      if (SC.none(selTop) || (selTop < 0)) selTop = 0 ;
+      if (SC.none(selTop) || selTop < 0) {
+        selTop = this.get('allowsCircularSelection') ? this._findPreviousSelectableItemFromIndex(lim-1) : 0;
+      }
       if (!content.objectAt(selTop)) selTop = sel ? sel.get('min') : -1;
       selBottom = selTop ;
       anchor = null ;
@@ -1798,7 +1810,9 @@ SC.CollectionView = SC.View.extend(SC.CollectionViewDelegate, SC.CollectionConte
     } else {
       selBottom = this._findNextSelectableItemFromIndex(selBottom + numberOfItems, selBottom);
       
-      if (selBottom >= lim) selBottom = lim-1;
+      if (SC.none(selBottom) || selBottom >= lim) {
+        selBottom = this.get('allowsCircularSelection') ? this._findNextSelectableItemFromIndex(0) : lim - 1;
+      }
       if (!content.objectAt(selBottom)) selBottom = sel ? sel.get('max') - 1 : -1;
       selTop = selBottom ;
       anchor = null ;

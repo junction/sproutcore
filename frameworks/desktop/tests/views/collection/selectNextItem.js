@@ -199,7 +199,21 @@ test("selectNextItem(YES) when selection is 8..9", function() {
   view.set('selection', sel);
   view._selectionAnchor = 8 ; // fake anchor
   view.selectNextItem(YES);
-  
+
   actual = view.get('selection');
   ok(expected.isEqual(actual), 'should should not change from previous of %@ (expected: %@ actual: %@)'.fmt(sel, expected, actual));  
+});
+
+test("allowsCircularSelection = YES when selection is 9..9", function () {
+  var sel = selectionFromIndex(9),
+      expected = selectionFromIndex(0),
+      actual;
+
+  view.set('allowsCircularSelection', YES);
+  view.set('selection', sel);
+  view.selectNextItem();
+  view.set('allowsCircularSelection', NO);
+
+  actual = view.get('selection');
+  ok(expected.isEqual(actual), 'should change from previous of %@ (expected: %@ actual: %@)'.fmt(sel, expected, actual));
 });
