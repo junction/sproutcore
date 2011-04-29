@@ -571,11 +571,14 @@ SC.MenuScrollView = SC.ScrollView.extend(
     if (vScroller && isVisible) {
       scrollerThickness = vScroller.get('scrollerThickness');
 
-      // Adjust when the bottom scroller is visible.
-      var bottom = view.getPath('layout.bottom') || 0;
-      bottom = SC.none(bottom) ? scrollerThickness : bottom;
+      // Adjust for visible scrollers.
+      var padding = 0;
+      if (layout.top === 0 || view.getPath('layout.top') > 0) {
+        padding = view.getPath('layout.bottom') || 0;
+        padding = SC.none(padding) ? scrollerThickness : padding;
+      }
 
-      if (vOffset < (cFrame.height - frame.height - bottom)) {
+      if (vOffset < (cFrame.height - frame.height - padding)) {
         layout.bottom = scrollerThickness;
       } else {
         layout.bottom = 0;
