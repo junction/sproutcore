@@ -495,6 +495,9 @@ SC.MenuScrollView = SC.ScrollView.extend(
   },
 
   scrollTo: function (x, y) {
+    if (!this.get('autohidesVerticalScroller')) {
+      return sc_super();
+    }
     // normalize params
     if (arguments.length === 1 && SC.typeOf(x) === SC.T_HASH) {
       y = x.y; x = x.x;
@@ -527,15 +530,29 @@ SC.MenuScrollView = SC.ScrollView.extend(
     additional controls you have added to the view.
   */
   tile: function () {
-    var hasScroller = this.get('hasVerticalScroller'),
+    var vScroller, layout = { left: 0, top: 0 },
+        hasScroller = this.get('hasVerticalScroller'),
         isVisible = this.get('isVerticalScrollerVisible'),
         vOffset = this.get('verticalScrollOffset'),
         maxOffset = this.get('maximumVerticalScrollOffset'),
-        vScroller, scrollerThickness, vScrollerIsVisible,
+        scrollerThickness, vScrollerIsVisible,
         cFrame = this.getPath('contentView.frame'),
         view = this.get('containerView'),
-        frame = view.get('frame'),
-        layout = { left: 0, top: 0 };
+        frame = view.get('frame');
+
+    // Fast path when the scrollers shouldn't be automatically hidden.
+    if (hasScroller && !this.get('autohidesVerticalScroller')) {
+      vScroller = this.get('verticalScrollerView');
+      layout.top = vScroller.get('scrollerThickness');
+      vScroller.set('layout', { height: layout.top, top: 0, right: 0, left: 0 });
+
+      vScroller = this.get('verticalScrollerView2');
+      layout.bottom = vScroller.get('scrollerThickness');
+      vScroller.set('layout', { height: layout.bottom, bottom: 0, right: 0, left: 0 });
+
+      view.set('layout', layout);
+      return;
+    }
 
     // Top scrollbar calculations.
     vScroller = hasScroller ? this.get('verticalScrollerView') : null;
@@ -558,7 +575,7 @@ SC.MenuScrollView = SC.ScrollView.extend(
       var bottom = view.getPath('layout.bottom') || 0;
       bottom = SC.none(bottom) ? scrollerThickness : bottom;
 
-      if (vOffset + frame.height < cFrame.height - bottom) {
+      if (vOffset < (cFrame.height - frame.height - bottom)) {
         layout.bottom = scrollerThickness;
       } else {
         layout.bottom = 0;
