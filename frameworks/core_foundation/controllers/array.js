@@ -401,14 +401,12 @@ SC.ArrayController = SC.Controller.extend(SC.Array, SC.SelectionSupport,
   },
 
   _scac_arrayContentWillChange: function(start, removed, added) {
-    this._scac_cached = NO;
     this.arrayContentWillChange(start, removed, added);
     var removedObjects = this.slice(start, start+removed);
     this.teardownEnumerablePropertyChains(removedObjects);
   },
 
   _scac_arrayContentDidChange: function(start, removed, added) {
-    this._scac_cached = NO;
     this.arrayContentDidChange(start, removed, added);
     var addedObjects = this.slice(start, start+added);
     this.setupEnumerablePropertyChains(addedObjects);
