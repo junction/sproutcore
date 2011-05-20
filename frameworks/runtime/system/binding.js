@@ -681,9 +681,9 @@ SC.Binding = /** @scope SC.Binding.prototype */{
   _syncOnConnect: NO,
 
   _computeBindingTargets: function() {
-    if (!this._fromTarget) {
+    var path, root, tuple ;
 
-      var path, root, tuple ;
+    if (!this._fromTarget) {
 
       // if the fromPropertyPath begins with a . or * then we may use the
       // toRoot as the root object.  Similar code exists in connect() so if
