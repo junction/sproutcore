@@ -1,5 +1,6 @@
 config :designer, :required => [:runtime, :foundation, :desktop]
 config :scroll_view, :required => [:runtime, :foundation, :desktop]
+config :menu, :required => [:'experimental/scroll_view']
 
 config :greenhouse,
   :required => [:sproutcore, :designer, :statechart],
