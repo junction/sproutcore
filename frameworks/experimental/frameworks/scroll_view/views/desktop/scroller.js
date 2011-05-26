@@ -256,6 +256,23 @@ SC.DesktopScrollerView = SC.CoreScrollerView.extend(
     return YES;
   },
 
+  mouseWheel: function (evt) {
+    var el = this.getPath('parentView.containerView.layer'),
+        rawEvent = evt.originalEvent;
+
+    if (el && rawEvent) {
+      try {
+        if (SC.typeOf(el.fireEvent) === SC.T_FUNCTION) { // IE
+          el.fireEvent(rawEvent.type, rawEvent);
+        } else { // W3C
+          el.dispatchEvent(rawEvent);
+        }
+      } catch (x) {
+        // Can't dispatch the event; give up.
+      }
+    }
+  },
+
   /** @private
     Starts a timer that fires after 300ms.  This is called when the user
     clicks a button or inside the track to move a page at a time. If they
