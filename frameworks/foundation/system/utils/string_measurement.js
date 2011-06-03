@@ -220,8 +220,12 @@ SC.mixin( /** @scope SC */ {
     }
 
     // the conclusion of which to use (innerText or textContent) should be cached
-    if (typeof element.innerText != "undefined") element.innerText = string;
-    else element.textContent = string;
+    if (ignoreEscape) {
+      element.innerHTML = string;
+    } else {
+      if (typeof element.innerText != "undefined") element.innerText = string;
+      else element.textContent = string;
+    }
 
     // generate result
     var result = {
